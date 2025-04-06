@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
-const jwt = require('jsonwebtoken'); // Add JWT for token generation
+const jwt = require('jsonwebtoken'); 
 const {
   User,
   validateLoginUser,
@@ -91,10 +91,8 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid password " });
     }
 
-    // Generate JWT token
     const token = null;
 
-    // Exclude password from response
     const { password, ...userData } = user._doc;
     userData.token = token;
 
