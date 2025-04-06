@@ -5,27 +5,28 @@ const authPath = require("./Routes/auth");
 const authPathV = require("./Routes/authV");
 const logger = require("./middlewares/logger");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
+const dotenv = require("dotenv");
+dotenv.config();
 
-// Connect to MongoDB
+
+// Local  Connect to MongoDB
 mongoose
-  .connect("mongodb://localhost/bookStoreDB")
+  .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("Connected to DB successfully");
   })
   .catch((error) => {
     console.log(`Failed to connect to MongoDB: ${error}`);
-  });
+  })
+
+// Online Connect to MongoDB
 
 // Initialize app
 const app = express();
 
-// Serve static files from the "pages" directory
 app.use(express.static(path.resolve(__dirname, "pages")));
-
-// JSON middleware
+// middlewares
 app.use(express.json());
-
-// Custom middleware
 app.use(logger);
 
 
@@ -44,7 +45,8 @@ app.use(notFound);
 app.use(errorHandler);
 
 // Start server
-const Port = 9000;
-app.listen(Port, () =>
-  console.log(`Server is running in ${process.env.NODE_ENV} mode on port ${Port}`)
-);
+const Port = process.env.PORT || 9000;
+app.listen(Port, () => {
+  console.log(`Server is running in ${process.env.NODE_ENV || 'development'} mode`);
+  console.log(`http://localhost:${Port}`);
+});

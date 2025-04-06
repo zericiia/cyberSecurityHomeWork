@@ -4,13 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login Form</title>
-    <link rel="stylesheet" href="styles/style.css" />
+    <link rel="stylesheet" href="styles/style.css">
   </head>
   <body>
     <div class="login-container">
-      <a href="">Emails</a>
-      <a href="">Passwords</a>
       <h2>Login</h2>
+      <!-- start form -->
       <form id="login-form">
         <div class="form-group">
           <label for="email">Email</label>
@@ -32,13 +31,39 @@
             required
           />
         </div>
-        <button type="submit">Login</button>
+        <button type="submit" class="login-btn">
+          <!-- icon hehe -->
+          <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+          Login
+        </button>
       </form>
       <p class="signup-link">
         Don't have an account? <a href="/register">Sign up</a>
       </p>
+      <div class="copy-buttons">
+        <button id="emails-btn" class="copy-btn">
+          <!-- icon hehe -->
+          <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          Copy Emails
+        </button>
+        <button id="passwords-btn" class="copy-btn">
+          <!-- icon hehe -->
+          <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          Copy Passwords
+        </button>
+      </div>
     </div>
-
+    <!-- scrippt for fetching data -->
     <script>
       document
         .getElementById("login-form")
@@ -60,13 +85,14 @@
               }
             );
 
-            // Check if the response is OK (status code 2xx)
+            // Check if the response is OK
             if (response.ok) {
               const data = await response.json();
-              localStorage.setItem("token", data.token); 
+              localStorage.setItem("token", data.token);
               alert("Login successful! Here is your Flag : ........");
-              // window.location.href = '/dashboard'; 
-            } else {
+            }
+            // stuff related to rate limiter
+             else {
               // Handle HTTP errors (e.g., 400, 429, 500)
               let errorMessage = "Login failed";
 
@@ -82,7 +108,7 @@
                 errorMessage = response.statusText || errorMessage;
               }
 
-              alert(errorMessage); 
+              alert(errorMessage);
             }
           } catch (error) {
             // Handle network errors or unexpected issues
@@ -90,6 +116,50 @@
             alert("An error occurred. Please try again.");
           }
         });
+    </script>
+    <!-- script for the copy and fetch txt -->
+    <script>
+      async function copyFromFile(filePath, btnId) {
+        try {
+          const response = await fetch(filePath);
+          if (!response.ok) throw new Error("File not found");
+          const text = await response.text();
+
+          // Copy to clipboard
+          await navigator.clipboard.writeText(text);
+
+          // Visual feedback
+          const btn = document.getElementById(btnId);
+          const originalText = btnId === "emails-btn" ? "Copy Emails" : "Copy Passwords";
+          btn.textContent = "Copied!";
+          setTimeout(() => {
+            // Restore the button with icon
+            if (btnId === "emails-btn") {
+              btn.innerHTML = `<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg> Copy Emails`;
+            } else {
+              btn.innerHTML = `<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg> Copy Passwords`;
+            }
+          }, 2000);
+        } catch (error) {
+          console.error("Error:", error);
+          alert("Failed to copy: " + error.message);
+        }
+      }
+
+      // Event listeners for the buttons
+      document.getElementById("emails-btn").addEventListener("click", () => {
+        copyFromFile("./textsheets/emails.txt", "emails-btn");
+      });
+
+      document.getElementById("passwords-btn").addEventListener("click", () => {
+        copyFromFile("../textsheets/passwords.txt", "passwords-btn");
+      });
     </script>
   </body>
 </html>

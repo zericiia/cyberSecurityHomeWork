@@ -1,0 +1,4 @@
+In Burp Suite, when you enumerate through emails, they are normally URL-encoded.
+For example: name@email.com becomes name@email%2ecom, where the dot (.) is converted to %2e.
+
+To prevent this during an attack, you can uncheck the checkbox at the bottom right corner labeled "URL-encode these characters".
