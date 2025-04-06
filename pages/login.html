@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Form</title>
+    <link rel="stylesheet" href="styles/style.css" />
+  </head>
+  <body>
+    <div class="login-container">
+      <a href="">Emails</a>
+      <a href="">Passwords</a>
+      <h2>Login</h2>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter your email"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            required
+          />
+        </div>
+        <button type="submit">Login</button>
+      </form>
+      <p class="signup-link">
+        Don't have an account? <a href="/register">Sign up</a>
+      </p>
+    </div>
+
+    <script>
+      document
+        .getElementById("login-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          try {
+            const response = await fetch(
+              "http://localhost:9000/api/authV/login",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, password }),
+              }
+            );
+
+            // Check if the response is OK (status code 2xx)
+            if (response.ok) {
+              const data = await response.json();
+              localStorage.setItem("token", data.token); 
+              alert("Login successful! Here is your Flag : ........");
+              // window.location.href = '/dashboard'; 
+            } else {
+              // Handle HTTP errors (e.g., 400, 429, 500)
+              let errorMessage = "Login failed";
+
+              try {
+                // Attempt to parse the error response as JSON
+                const errorData = await response.json();
+                errorMessage = errorData.message || errorMessage;
+                if (errorData.errors) {
+                  errorMessage += "\n" + errorData.errors.join("\n");
+                }
+              } catch (error) {
+                // If the response is not JSON, use the status text
+                errorMessage = response.statusText || errorMessage;
+              }
+
+              alert(errorMessage); 
+            }
+          } catch (error) {
+            // Handle network errors or unexpected issues
+            console.error("Error:", error);
+            alert("An error occurred. Please try again.");
+          }
+        });
+    </script>
+  </body>
+</html>
