@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register Form</title>
+    <link rel="stylesheet" href="styles/style.css">
+  </head>
+  <body>
+    <div class="login-container">
+      <h2>Register</h2>
+      <form id="register-form">
+        <div class="form-group">
+          <label for="name">Username</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Enter your username"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter your email"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="confirm-password">Confirm Password</label>
+          <input
+            type="password"
+            id="confirm-password"
+            name="confirm-password"
+            placeholder="Confirm your password"
+            required
+          />
+        </div>
+        <button type="submit" class="login-btn">
+          <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="8.5" cy="7" r="4"></circle>
+            <line x1="20" y1="8" x2="20" y2="14"></line>
+            <line x1="23" y1="11" x2="17" y2="11"></line>
+          </svg>
+          Register
+        </button>
+      </form>
+      <p class="signup-link">
+        Already have an account? <a href="login.html">login</a>
+      </p>
+    </div>
+
+    <script>
+      document
+        .getElementById("register-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const username = document.getElementById("name").value;
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+          const confirmPassword = document.getElementById("confirm-password").value;
+
+          // Validate passwords match
+          if (password !== confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+          }
+
+          try {
+            const response = await fetch(
+              "http://localhost:9000/api/authV/register",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ username, email, password }),
+              }
+            );
+
+            if (response.ok) {
+              const data = await response.json();
+              localStorage.setItem("token", data.token);
+              alert("Registration successful! You can now login.");
+              window.location.href = "login.html";
+            } else {
+              let errorMessage = "Registration failed";
+              try {
+                const errorData = await response.json();
+                errorMessage = errorData.message || errorMessage;
+                if (errorData.errors) {
+                  errorMessage += "\n" + errorData.errors.join("\n");
+                }
+              } catch (error) {
+                errorMessage = response.statusText || errorMessage;
+              }
+              alert(errorMessage);
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            alert("An error occurred. Please try again.");
+          }
+        });
+    </script>
+  </body>
+</html> 
