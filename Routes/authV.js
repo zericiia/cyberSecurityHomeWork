@@ -47,7 +47,7 @@ router.post("/register", async (req, res) => {
     const result = await user.save();
 
     // Generate JWT token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = null;
 
     // Exclude password from response
     const { password, ...userData } = result._doc;
